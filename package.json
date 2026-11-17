@@ -1,16 +1,40 @@
 {
   "name": "idea-bank",
   "version": "0.1.0",
-  "description": "MCP server — introspecting portfolio + tajná idea banka proti tvůrčímu bloku",
+  "description": "MCP server with a secret idea bank — store project ideas and get portfolio gap analysis to beat creative block",
   "type": "module",
+  "license": "MIT",
   "bin": {
-    "idea-bank": "src/index.ts"
+    "idea-bank": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ideas",
+    "project-ideas",
+    "portfolio",
+    "brainstorming",
+    "cli",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://git.laferrari.eu/lafe_trap/idea-bank.git"
   },
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.0.0",

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { readFileSync, existsSync } from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
