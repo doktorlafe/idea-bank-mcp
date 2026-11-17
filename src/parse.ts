@@ -177,10 +177,18 @@ export function parseStatus(path = PATHS.statusMd): Status {
 
   const sections: StatusSection[] = [];
   let current: StatusSection | null = null;
+  // index sloupce s názvem projektu v aktuální tabulce; null = hlavička ještě nepřečtena
+  let projIdx: number | null = null;
+
+  const push = (raw: string) => {
+    const name = cleanName(raw);
+    if (name && current && !current.projects.includes(name)) current.projects.push(name);
+  };
 
   const flush = () => {
     if (current) sections.push(current);
     current = null;
+    projIdx = null;
   };
 
   for (const line of lines) {
@@ -191,26 +199,41 @@ export function parseStatus(path = PATHS.statusMd): Status {
     }
     if (!current) continue;
 
-    // řádky tabulky → jména projektů (sloupec "projekt")
-    if (line.trimStart().startsWith('|')) {
-      const cells = splitRow(line);
-      // hledej buňku, která vypadá jako jméno projektu (backticky / lomítko / pomlčka)
-      for (const cell of cells) {
-        const c = cell.trim();
-        if (!c || isSeparator(line)) continue;
-        if (/^[\d#a-z]*$/.test(c.replace(/[b\d# ]/g, ''))) continue; // přeskoč číslování
-        if (c.startsWith('`') || /^[\p{L}\p{N}._-]+$/u.test(c)) {
-          const name = cleanName(c);
-          if (name && !current.projects.includes(name)) current.projects.push(name);
-        }
-      }
+    // nový nadpis (###) ukončí případnou tabulku
+    if (line.startsWith('#')) {
+      projIdx = null;
       continue;
     }
 
+    // řádky tabulky → jméno projektu ze sloupce "Projekt"
+    if (line.trimStart().startsWith('|')) {
+      if (isSeparator(line)) continue;
+      const cells = splitRow(line);
+
+      if (projIdx === null) {
+        // první řádek tabulky = hlavička → najdi sloupec s projektem a přeskoč ho
+        const found = cells.findIndex((h) => h.toLowerCase().includes('projekt'));
+        projIdx = found >= 0 ? found : Math.min(1, cells.length - 1);
+        continue;
+      }
+
+      push(cells[projIdx] ?? '');
+      continue;
+    }
+
+    // konec tabulky → další tabulka bude mít zase hlavičku
+    projIdx = null;
+
     // TODO položky `- [ ] \`linuxserver/code-server\` — popis`
     const todo = line.match(/^\s*-\s*\[[ xX]?\]\s+`([^`]+)`/);
-    if (todo && current.title.toLowerCase().includes('todo')) {
-      if (!current.projects.includes(todo[1])) current.projects.push(todo[1]);
+    if (todo) {
+      push(todo[1]);
+      continue;
+    }
+
+    // odstavcový seznam v backticích: `lafe-web` · `poradna` · `gappi`
+    if (line.includes('`') && !line.trimStart().startsWith('-')) {
+      for (const m of line.matchAll(/`([^`]+)`/g)) push(m[1]);
     }
   }
   flush();
