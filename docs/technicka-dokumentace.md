@@ -197,3 +197,54 @@ server.registerResource(
 - Kategorie se filtrují podle počtu projektů — prázdná sekce zmizí.
 - `list_stack` počítá každou technologii jednou na projekt (ne výskyty v textu).
 - Žádná cache — každé volání čte soubory z disku (u 35 projektů zanedbatelné).
+
+---
+
+## 9. Nasazení pro veřejnost — oddělení pojmů
+
+Při úvaze o „zveřejnění" je snadné smíchat tři nezávislé věci. Držíme je oddělené:
+
+| Vrstva | Co to je | Kde to žije |
+|---|---|---|
+| **Repo** | zdrojový kód + historie | GitHub / Gitea — kdekoliv |
+| **Distribuce** | jak si to někdo stáhne | `git clone` nebo `npm install` / `npx` |
+| **Hostování** | běžící proces, ke kterému se klient připojuje | tvůj server, nebo uživatelův počítač |
+
+**Klíčové:** GitHub není potřeba k žádné z těchto vrstev samotných. Gitea zvládne repo
+i distribuci přes `git clone`. GitHub pomáhá až ve dvou konkrétních bodech — viz níže.
+
+### Dvě podoby „pro veřejnost" — zásadně odlišné
+
+#### A) Uživatel si server spustí u sebe (stdio)
+
+```
+npm install -g idea-bank     # nebo npx idea-bank
+# uživatel si ho přidá do Claude Code → běží u něj, čte JEHO soubory
+```
+
+- **Nikdo nic nehostuje.** Autor jen publikuje kód.
+- Uživatel má vlastní `projects.md` a vlastní `ideas.json` (vlastní banku).
+- Této podobě odpovídá **současný design** (stdio, cesty přes `homedir()`).
+- GitHub tu pomáhá: **objevitelnost** (lidi hledají MCP na GitHubu) a **npm** (odkaz na repo).
+
+#### B) Autor hostuje server (HTTP/SSE)
+
+```
+uživatel → https://mcp.<domena> → běžící server (autorův)
+```
+
+- Vyžaduje přepsat transport na `StreamableHTTPServerTransport` + autentizaci + TLS + limity.
+- **GitHub tu není potřeba vůbec** — je to čistě provozní otázka.
+- Naráží na koncept: čí data by server četl? Cizí `projects.md` na autorově serveru nedává smysl.
+
+### Co to znamená pro tento projekt
+
+idea-bank je **osobní nástroj** — čte soubory konkrétního uživatele. Pro veřejnost má smysl
+jen varianta **A** (distribuce jako balíček), ne B (hostování služby).
+
+Praktický důsledek:
+
+- **Teď:** primární repo na Gitee (privátní, pod vlastní kontrolou), bez nutnosti řešit veřejnost.
+- **Až k publikaci:** GitHub jako veřejné zrcadlo + publikace na npm (`npx idea-bank`).
+- Před zveřejněním je nutné **vyčistit osobní údaje** z dokumentace (absolutní cesty
+  `/home/lafe_trap`, popis infrastruktury) — viz `config.ts`, odkud jsou cesty odvozené.
