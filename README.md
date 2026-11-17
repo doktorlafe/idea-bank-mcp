@@ -55,8 +55,34 @@ co už máš v to-do.
 | Nástroj | Co dělá |
 |---|---|
 | `list_ideas` | vypíše uložené nápady |
-| `add_idea` | uloží nápad (`title` povinný, `platform` / `category` / `rationale` doporučené) |
+| `add_idea` | uloží nápad (`title` povinný; `platform`, `category`, `prinos`, `obtiznost` doporučené) |
 | `remove_idea` | smaže nápad podle `id` |
+
+### Struktura nápadu
+
+Nápady jsou **obecná projektová zadání**, ne odvozeniny z portfolia.
+
+| Pole | Význam |
+|---|---|
+| `title` | název zadání („Zprovoznit Nginx v Dockeru") |
+| `platform` | jazyk / technologie (bash, C#, Python, PowerShell…) |
+| `category` | typ projektu — viz taxonomie níže |
+| `prinos` | co se na tom naučíš |
+| `obtiznost` | 1–4 (viz tabulka) |
+
+**Obtížnost:**
+
+| Level | Název | Rozsah |
+|---|---|---|
+| 1 | Začátečník | 1–2 h, jeden nástroj |
+| 2 | Mírně pokročilý | víkend, 2–3 komponenty |
+| 3 | Pokročilý | týden+, architektura, více služeb |
+| 4 | Expert | měsíc, vlastní implementace, výkon, bezpečnost |
+
+**Kategorie:**
+
+`databáze` · `vizualizace dat` · `monitoring` · `linux` · `shell / bash` ·
+`skriptování` · `sítě` · `web` · `windows / PowerShell` · `C++ / C#` · `AI / ML`
 
 ---
 

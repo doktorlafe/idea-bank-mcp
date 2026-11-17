@@ -125,10 +125,15 @@ monitoring, média, databáze, automatizace, mobil, desktop, hry, IoT).
   "title": "...",
   "platform": "...",
   "category": "...",
-  "rationale": "...",
+  "prinos": "...",
+  "obtiznost": 1,
   "createdAt": "ISO-8601"
 }
 ```
+
+Nápady jsou **obecná projektová zadání** (ne odvozeniny z portfolia).
+`obtiznost`: 1 začátečník, 2 mírně pokročilý, 3 pokročilý, 4 expert
+(výchozí 2, pokud se neuvede).
 
 - Ukládá se celé pole (read-modify-write), ne databáze — objem je malý.
 - Zápis s `mode: 0o600`.

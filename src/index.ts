@@ -180,17 +180,34 @@ function buildServer(): McpServer {
     'add_idea',
     {
       description:
-        'Uloží nový nápad do tajné idea banky. title je povinný; platform, ' +
-        'category a rationale jsou doporučené (kvalitní nápad má všechny).',
+        'Uloží nový nápad do tajné idea banky. Nápady jsou obecná projektová zadání ' +
+        '(ne odvozeniny z portfolia). title je povinný; platform, category, prinos ' +
+        'a obtiznost jsou doporučené.',
       inputSchema: z.object({
         title: z.string().describe('Krátký název nápadu'),
-        platform: z.string().optional().describe('Jazyk/platforma/stack'),
-        category: z.string().optional().describe('Doména (web, AI, bezpečnost...)'),
-        rationale: z.string().optional().describe('Proč to dává smysl v tomto portfoliu'),
+        platform: z.string().optional().describe('Jazyk/platforma/stack (např. bash, C#, Python)'),
+        category: z
+          .string()
+          .optional()
+          .describe('Typ projektu: databáze, vizualizace dat, monitoring, linux, shell / bash, skriptování, sítě, web, windows / PowerShell, C++ / C#, AI / ML'),
+        prinos: z.string().optional().describe('Co se na tom naučíš'),
+        obtiznost: z
+          .number()
+          .int()
+          .min(1)
+          .max(4)
+          .optional()
+          .describe('1 = začátečník, 2 = mírně pokročilý, 3 = pokročilý, 4 = expert'),
       }),
     },
-    async ({ title, platform, category, rationale }) => {
-      const idea = addIdea({ title, platform, category, rationale });
+    async ({ title, platform, category, prinos, obtiznost }) => {
+      const idea = addIdea({
+        title,
+        platform,
+        category,
+        prinos,
+        obtiznost: obtiznost as 1 | 2 | 3 | 4 | undefined,
+      });
       return text({ ok: true, idea });
     },
   );

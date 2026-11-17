@@ -3,15 +3,19 @@ import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { PATHS } from './config.js';
 
+/** 1 = začátečník, 2 = mírně pokročilý, 3 = pokročilý, 4 = expert */
+export type Obtiznost = 1 | 2 | 3 | 4;
+
 export interface Idea {
   id: string;
   title: string;
-  /** jazyk / platforma / stack doporučený pro nápad */
+  /** jazyk / platforma / stack */
   platform: string;
-  /** doména, do které nápad spadá (web, AI, bezpečnost, ...) */
+  /** typ projektu: databáze, monitoring, linux, shell/bash, ... */
   category: string;
-  /** proč to dává smysl právě v tomto portfoliu */
-  rationale: string;
+  /** co se na tom naučíš */
+  prinos: string;
+  obtiznost: Obtiznost;
   createdAt: string;
 }
 
@@ -19,7 +23,8 @@ export interface IdeaInput {
   title: string;
   platform?: string;
   category?: string;
-  rationale?: string;
+  prinos?: string;
+  obtiznost?: Obtiznost;
 }
 
 /** Načte celou banku. Neexistující / poškozený soubor → prázdné pole. */
@@ -48,7 +53,8 @@ export function addIdea(input: IdeaInput): Idea {
     title: input.title,
     platform: input.platform ?? '',
     category: input.category ?? '',
-    rationale: input.rationale ?? '',
+    prinos: input.prinos ?? '',
+    obtiznost: input.obtiznost ?? 2,
     createdAt: new Date().toISOString(),
   };
   ideas.push(idea);
