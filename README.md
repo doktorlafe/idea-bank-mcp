@@ -1,117 +1,147 @@
 # idea-bank
 
-MCP server, který pomáhá prolomit tvůrčí blok. Ne tím, že by nabídl hotový seznam nápadů,
-ale tím, že agentovi (Claude, Hermes) dá **strukturovaný kontext o tvém reálném portfoliu** —
-a z něj pak vznikne návrh, který sedí na to, co už máš.
+An MCP server that helps you beat creative block — not by handing you a list of ideas,
+but by giving your AI agent the context to propose *your* next project.
 
-> Server nedává odpověď. Dává materiál pro rozhovor.
-
----
-
-## Proč to existuje
-
-Když má člověk blok, generický seznam („postav si todo app") nepomůže. Pomůže kontext:
-*co už mám, co mi chybí, co se mnou rezonuje*. Tenhle server ho vytáhne z lokálních
-souborů a předloží ho agentovi ve chvíli, kdy ho potřebuješ.
-
-Zároveň platí zásada: **do tajné banky jde jen to, co projde tvým úsudkem.** Server sám
-banka neplní — kdyby vrátil hotový seznam, neměl bys důvod ho znovu otevírat.
+> The server doesn't give answers. It gives material for a conversation.
 
 ---
 
-## Jak to funguje
+## What it does
 
-```
-~/projects/projects.md      ─┐
-~/projects/status.md        ─┼─→  MCP server  ─→  agent  ─→  dialog s tebou
-~/vault/AI-CONTROLLER-MEMORY.md ─┘         │
-                                           └─→  ideas.json  (tajná banka)
-```
+Two things, working together:
 
-1. Agent zavolá `analyze_portfolio` a `get_gaps`.
-2. Přečte vizi z `idea-bank://vision`.
-3. Získá reálný stav: co existuje, co je plánované, kde jsou díry.
-4. Navrhne konkrétní projekty zasazené do portfolia.
-5. Co schválíš, uloží se přes `add_idea` do tajné banky.
+1. **A secret idea bank** — store project ideas (categorized, with difficulty levels),
+   and pull them out whenever you're stuck.
+2. **Portfolio gap analysis** — point it at a catalog of your existing projects and it
+   tells you which domains and technologies you're *not* using yet.
+
+The recommendation itself happens in the conversation: the agent reads your portfolio,
+finds the gaps, and proposes concrete projects — grounded in what you already have,
+not a generic list scraped from the internet.
 
 ---
 
-## Nástroje (Tools)
-
-### Čtení portfolia — kontext pro doporučení
-
-| Nástroj | Co vrací |
-|---|---|
-| `list_categories` | kategorie portfolia s počtem projektů a jejich jmény |
-| `list_stack` | jazyky a technologie s počtem výskytů napříč portfoliem |
-| `analyze_portfolio` | statistiky: počet projektů, kategorie, rozložení podle stavu (kritické / aktivní / plánované / archiv / TODO) |
-| `get_gaps` | domény bez jediného projektu + technologie, které se vůbec nepoužívají |
-
-`get_gaps` zohledňuje i **plánované** projekty ze `status.md` — nenavrhne ti něco,
-co už máš v to-do.
-
-### Tajná idea banka — read-write
-
-| Nástroj | Co dělá |
-|---|---|
-| `list_ideas` | vypíše uložené nápady |
-| `add_idea` | uloží nápad (`title` povinný; `platform`, `category`, `prinos`, `obtiznost` doporučené) |
-| `remove_idea` | smaže nápad podle `id` |
-
-### Struktura nápadu
-
-Nápady jsou **obecná projektová zadání**, ne odvozeniny z portfolia.
-
-| Pole | Význam |
-|---|---|
-| `title` | název zadání („Zprovoznit Nginx v Dockeru") |
-| `platform` | jazyk / technologie (bash, C#, Python, PowerShell…) |
-| `category` | typ projektu — viz taxonomie níže |
-| `prinos` | co se na tom naučíš |
-| `obtiznost` | 1–4 (viz tabulka) |
-
-**Obtížnost:**
-
-| Level | Název | Rozsah |
-|---|---|---|
-| 1 | Začátečník | 1–2 h, jeden nástroj |
-| 2 | Mírně pokročilý | víkend, 2–3 komponenty |
-| 3 | Pokročilý | týden+, architektura, více služeb |
-| 4 | Expert | měsíc, vlastní implementace, výkon, bezpečnost |
-
-**Kategorie:**
-
-`databáze` · `vizualizace dat` · `monitoring` · `linux` · `shell / bash` ·
-`skriptování` · `sítě` · `web` · `windows / PowerShell` · `C++ / C#` · `AI / ML`
-
----
-
-## Resources (procházení v UI)
-
-| URI | Obsah |
-|---|---|
-| `idea-bank://portfolio/katalog` | `~/projects/projects.md` |
-| `idea-bank://portfolio/status` | `~/projects/status.md` |
-| `idea-bank://vision` | `~/vault/AI-CONTROLLER-MEMORY.md` |
-
----
-
-## Instalace
+## Quick start
 
 ```bash
-cd ~/projects/idea-bank
-npm install
-npm run build          # tsc → dist/
+npx idea-bank
 ```
 
-Požadavky: Node 22+, npm. Server je čistě ESM TypeScript, běží přes `node dist/index.js`.
+Or install globally:
 
-### Vlastní cesty (proměnné prostředí)
+```bash
+npm install -g idea-bank
+```
 
-Cesty ke zdrojovým souborům vycházejí z home adresáře. Pro jiné rozložení
-(nebo jiného uživatele) je lze přepsat:
+## Connect to Claude Code
 
-| Proměnná | Výchozí hodnota |
+Add the server to your MCP config (`~/.claude.json` for all projects, or `.mcp.json`
+for a single project):
+
+```json
+{
+  "mcpServers": {
+    "idea-bank": {
+      "command": "npx",
+      "args": ["-y", "idea-bank"]
+    }
+  }
+}
+```
+
+```bash
+claude mcp add idea-bank -- npx -y idea-bank
+```
+
+Restart Claude Code — MCP tools load at startup.
+
+---
+
+## Using it
+
+You don't call the tools by hand. Just say:
+
+> "I don't know what to build."
+
+The agent pulls the context and proposes projects. For a more specific answer:
+
+> "What could I build in Rust?"
+> "What gaps does my portfolio have?"
+> "Which technologies do I use the most?"
+
+To save an idea:
+
+> "Save that to the bank."
+
+---
+
+## Tools
+
+### Reading the portfolio — context for recommendations
+
+| Tool | Returns |
+|---|---|
+| `list_categories` | portfolio categories with project counts and names |
+| `list_stack` | languages and technologies ranked by usage |
+| `analyze_portfolio` | stats: project count, categories, breakdown by status |
+| `get_gaps` | domains with no project + technologies never used |
+
+`get_gaps` also considers *planned* projects, so it won't suggest something
+you already have on your to-do list.
+
+### The secret idea bank — read/write
+
+| Tool | Does |
+|---|---|
+| `list_ideas` | lists saved ideas |
+| `add_idea` | saves an idea (`title` required; `platform`, `category`, `prinos`, `obtiznost` recommended) |
+| `remove_idea` | removes an idea by `id` |
+
+### Idea shape
+
+Ideas are general project briefs, independent of any specific portfolio.
+
+| Field | Meaning |
+|---|---|
+| `title` | the brief (e.g. "Set up Nginx in Docker") |
+| `platform` | language / stack (bash, C#, Python, PowerShell…) |
+| `category` | project type (see taxonomy below) |
+| `prinos` | what you'll learn from it |
+| `obtiznost` | difficulty 1–4 |
+
+**Difficulty:**
+
+| Level | Name | Scope |
+|---|---|---|
+| 1 | Beginner | 1–2 h, one tool |
+| 2 | Intermediate | a weekend, 2–3 components |
+| 3 | Advanced | a week+, architecture, multiple services |
+| 4 | Expert | a month, custom implementation, performance, security |
+
+**Categories:**
+
+`database` · `data visualization` · `monitoring` · `linux` · `shell / bash` ·
+`scripting` · `networking` · `web` · `windows / PowerShell` · `C++ / C#` · `AI / ML`
+
+---
+
+## Resources
+
+| URI | Content |
+|---|---|
+| `idea-bank://portfolio/catalog` | the project catalog |
+| `idea-bank://portfolio/status` | project status |
+| `idea-bank://vision` | a central vision / goals file |
+
+---
+
+## Configuration
+
+Source file paths default to `~/projects/...`. Override them with environment
+variables to point anywhere:
+
+| Variable | Default |
 |---|---|
 | `IDEA_BANK_PROJECTS_MD` | `~/projects/projects.md` |
 | `IDEA_BANK_STATUS_MD` | `~/projects/status.md` |
@@ -119,131 +149,36 @@ Cesty ke zdrojovým souborům vycházejí z home adresáře. Pro jiné rozložen
 | `IDEA_BANK_IDEAS_JSON` | `~/projects/idea-bank/ideas.json` |
 
 ```bash
-IDEA_BANK_PROJECTS_MD=/data/katalog.md node dist/index.js
+IDEA_BANK_PROJECTS_MD=/data/catalog.md node dist/index.js
 ```
 
-Chybějící soubor server neshodí — vrátí prázdný katalog/status (viz `parse.ts`).
-
-## Připojení do Claude Code
-
-```bash
-claude mcp add --scope user idea-bank node /home/lafe_trap/projects/idea-bank/dist/index.js
-claude mcp list          # → idea-bank: ✔ Connected
-```
-
-Pro připojení jen v jednom projektu použij `.mcp.json` v kořeni projektu:
-
-```json
-{
-  "mcpServers": {
-    "idea-bank": {
-      "command": "node",
-      "args": ["/home/lafe_trap/projects/idea-bank/dist/index.js"]
-    }
-  }
-}
-```
-
-Po přidání serveru je potřeba **restartovat Claude Code** — MCP nástroje se načítají při startu.
+A missing file never crashes the server — it returns an empty catalog/status.
 
 ---
 
-## Používání
+## Privacy & security
 
-Není potřeba volat nástroje ručně. Stačí říct:
-
-> „Nevím, co stavět."
-
-Agent si sám vyžádá kontext a navrhne projekty. Když chceš konkrétnější odpověď:
-
-> „Co bych mohl postavit v Rustu?"
-> „Jaké mám mezery v portfoliu?"
-> „Jaké technologie používám nejvíc?"
-
-Uložení nápadu:
-
-> „Ulož to do banky."
-
----
-
-## Soukromí a bezpečnost
-
-| Vlastnost | Jak je zajištěno |
+| Property | How |
 |---|---|
-| Banka není veřejná | `ideas.json` v `.gitignore`, práva `0600` |
-| Bez otevřeného portu | stdio transport — server je podproces, ne služba na síti |
-| Bez internetu | čte jen lokální soubory, žádná síťová volání |
-| Bez citlivých hodnot | načítá pouze katalog, status a vizi |
+| Ideas stay private | `ideas.json` is local, `0600`, never committed |
+| No open port | stdio transport — a child process, not a network service |
+| No internet | reads local files only, no network calls |
+| No secrets read | only catalog, status, and vision files |
 
-> DNS záznam ani reverse proxy tomuto serveru nepomohou — nemá síťové rozhraní.
-> Pro vzdálený přístup by bylo potřeba přepsat transport na HTTP/SSE a doplnit autentizaci.
-
----
-
-## Struktura projektu
-
-```
-idea-bank/
-├── src/
-│   ├── index.ts      # server, nástroje, resources, gap analýza
-│   ├── parse.ts      # parser projects.md / status.md
-│   ├── ideas.ts      # read-write tajná banka
-│   └── config.ts     # cesty ke zdrojům
-├── docs/
-│   └── technicka-dokumentace.md
-├── dist/             # build (gitignored)
-├── ideas.json        # TAJNÉ (gitignored)
-├── CLAUDE.md         # pravidla pro agenty
-└── README.md
-```
-
-## Vývoj
-
-```bash
-npm run dev        # tsx watch
-npm run typecheck  # tsc --noEmit
-npm run build      # tsc → dist/
-```
-
-Ruční test přes stdio:
-
-```bash
-printf '%s\n' \
-  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0"}}}' \
-  '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
-  '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_gaps","arguments":{}}}' \
-  | node dist/index.js
-```
-
-## Omezení
-
-- Kvalita doporučení = kvalita `projects.md`. Když katalog zaostává za realitou,
-  gap analýza hlásí falešné mezery. Katalog je potřeba udržovat.
-- Parser je heuristický (markdown tabulky + detekce klíčových slov), ne přesná analýza.
-- Detekce stacku je odhad — technologie zmíněná v popisu se počítá jako použitá.
+> A DNS record or reverse proxy won't help this server — it has no network interface.
+> Remote access would require rewriting the transport to HTTP/SSE and adding auth.
 
 ---
 
-## Roadmapa
+## Why it works this way
 
-idea-bank je dnes **osobní nástroj**. Tahle roadmapa říká, kam může jít.
+The bank is **not** derived from the portfolio. If the server handed you a finished
+list of ideas, you'd have no reason to open it again. The value is in the process —
+context → conversation → your judgment → the bank. The portfolio and gap analysis are
+*material for thinking*, not a generator of bank contents.
 
-| Fáze | Stav | Co to obnáší |
-|---|---|---|
-| **1. Osobní server** | ✅ hotovo | lokální stdio, čte tvé portfolio, tajná banka |
-| **2. Konfigurovatelné cesty** | ✅ hotovo | env proměnné `IDEA_BANK_*`, ať to běží kdekoli |
-| **3. Bohatší banka** | probíhá | kategorie + obtížnost, postupně plnit zadání |
-| **4. Distribuce** | plán | publikace na npm (`npx idea-bank`) + veřejné repo |
-| **5. Multi-user** | idea | každý uživatel vlastní banka, sdílené kategorie |
+---
 
-### Proč to dávat ven (a jak)
+## License
 
-Cíl veřejnosti není „hostovat službu", ale **distribuovat nástroj**: každý si ho
-spustí u sebe, se svými soubory a vlastní bankou. To znamená:
-
-- `npm install -g idea-bank` → přidá do Claude Code → běží lokálně
-- veřejné repo (GitHub) jako zrcadlo pro objevitelnost a důvěru
-- před publikací vyčistit osobní údaje (cesty, popis infrastruktury)
-
-Víc o oddělení pojmů **repo / distribuce / hosting** a o dvou podobách zveřejnění:
-`docs/technicka-dokumentace.md` → sekce 9.
+[MIT](./LICENSE)
