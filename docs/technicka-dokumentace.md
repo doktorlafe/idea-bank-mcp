@@ -248,3 +248,18 @@ Praktický důsledek:
 - **Až k publikaci:** GitHub jako veřejné zrcadlo + publikace na npm (`npx idea-bank`).
 - Před zveřejněním je nutné **vyčistit osobní údaje** z dokumentace (absolutní cesty
   `/home/lafe_trap`, popis infrastruktury) — viz `config.ts`, odkud jsou cesty odvozené.
+
+### Konfigurovatelné cesty (předpoklad pro distribuci)
+
+Aby si mohl nástroj spustit cizí uživatel se svými soubory, cesty nejsou natvrdo
+v `homedir()` — každá se dá přepsat proměnnou prostředí (viz `config.ts`):
+
+| Proměnná | Výchozí |
+|---|---|
+| `IDEA_BANK_PROJECTS_MD` | `~/projects/projects.md` |
+| `IDEA_BANK_STATUS_MD` | `~/projects/status.md` |
+| `IDEA_BANK_VISION_MD` | `~/vault/AI-CONTROLLER-MEMORY.md` |
+| `IDEA_BANK_IDEAS_JSON` | `~/projects/idea-bank/ideas.json` |
+
+Chybějící soubor neshodí server — `parse.ts` vrací prázdný katalog/status
+(`readSafe`). To je nutné pro variantu A, kde uživatel nemá tvůj vault ani tvůj `projects.md`.

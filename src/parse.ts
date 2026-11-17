@@ -107,9 +107,18 @@ function extractStack(stackCell: string, description: string): string[] {
 // Parsery
 // ---------------------------------------------------------------------------
 
+/** Bezpečné čtení — chybějící soubor vrátí prázdný řetězec, neshodí server. */
+function readSafe(path: string): string {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
 /** Načte projects.md a rozdělí ho na kategorie (## sekce) + projekty. */
 export function parseCatalog(path = PATHS.projectsMd): Catalog {
-  const text = readFileSync(path, 'utf8');
+  const text = readSafe(path);
   const lines = text.split('\n');
 
   const title = lines.find((l) => l.startsWith('# '))?.replace(/^#\s*/, '').trim() ?? '';
@@ -181,7 +190,7 @@ export function parseCatalog(path = PATHS.projectsMd): Catalog {
 
 /** Načte status.md a rozdělí ho na sekce (🔴 kritické, 🟢 plánované, TODO...). */
 export function parseStatus(path = PATHS.statusMd): Status {
-  const text = readFileSync(path, 'utf8');
+  const text = readSafe(path);
   const lines = text.split('\n');
 
   const title = lines.find((l) => l.startsWith('# '))?.replace(/^#\s*/, '').trim() ?? '';

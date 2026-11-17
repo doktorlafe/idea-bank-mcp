@@ -106,6 +106,24 @@ npm run build          # tsc → dist/
 
 Požadavky: Node 22+, npm. Server je čistě ESM TypeScript, běží přes `node dist/index.js`.
 
+### Vlastní cesty (proměnné prostředí)
+
+Cesty ke zdrojovým souborům vycházejí z home adresáře. Pro jiné rozložení
+(nebo jiného uživatele) je lze přepsat:
+
+| Proměnná | Výchozí hodnota |
+|---|---|
+| `IDEA_BANK_PROJECTS_MD` | `~/projects/projects.md` |
+| `IDEA_BANK_STATUS_MD` | `~/projects/status.md` |
+| `IDEA_BANK_VISION_MD` | `~/vault/AI-CONTROLLER-MEMORY.md` |
+| `IDEA_BANK_IDEAS_JSON` | `~/projects/idea-bank/ideas.json` |
+
+```bash
+IDEA_BANK_PROJECTS_MD=/data/katalog.md node dist/index.js
+```
+
+Chybějící soubor server neshodí — vrátí prázdný katalog/status (viz `parse.ts`).
+
 ## Připojení do Claude Code
 
 ```bash
@@ -203,3 +221,29 @@ printf '%s\n' \
   gap analýza hlásí falešné mezery. Katalog je potřeba udržovat.
 - Parser je heuristický (markdown tabulky + detekce klíčových slov), ne přesná analýza.
 - Detekce stacku je odhad — technologie zmíněná v popisu se počítá jako použitá.
+
+---
+
+## Roadmapa
+
+idea-bank je dnes **osobní nástroj**. Tahle roadmapa říká, kam může jít.
+
+| Fáze | Stav | Co to obnáší |
+|---|---|---|
+| **1. Osobní server** | ✅ hotovo | lokální stdio, čte tvé portfolio, tajná banka |
+| **2. Konfigurovatelné cesty** | ✅ hotovo | env proměnné `IDEA_BANK_*`, ať to běží kdekoli |
+| **3. Bohatší banka** | probíhá | kategorie + obtížnost, postupně plnit zadání |
+| **4. Distribuce** | plán | publikace na npm (`npx idea-bank`) + veřejné repo |
+| **5. Multi-user** | idea | každý uživatel vlastní banka, sdílené kategorie |
+
+### Proč to dávat ven (a jak)
+
+Cíl veřejnosti není „hostovat službu", ale **distribuovat nástroj**: každý si ho
+spustí u sebe, se svými soubory a vlastní bankou. To znamená:
+
+- `npm install -g idea-bank` → přidá do Claude Code → běží lokálně
+- veřejné repo (GitHub) jako zrcadlo pro objevitelnost a důvěru
+- před publikací vyčistit osobní údaje (cesty, popis infrastruktury)
+
+Víc o oddělení pojmů **repo / distribuce / hosting** a o dvou podobách zveřejnění:
+`docs/technicka-dokumentace.md` → sekce 9.
