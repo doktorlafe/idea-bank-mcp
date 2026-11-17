@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.log
+
+# TAJNÉ — idea banka. Nikdy necommittovat, nikdy publikovat.
+ideas.json
