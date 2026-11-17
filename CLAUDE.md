@@ -20,6 +20,11 @@ portfolia, ze kterého doporučí konkrétní nové projekty.
 ## Zásady
 
 - **Tajnost banky:** `ideas.json` je v `.gitignore`, nikdy necommittovat, práva `0600`.
+- **Banka NENÍ odvozenina portfolia.** Nikdy neplnit banku automaticky z `get_gaps`
+  ani z jiného výstupu portfolia. Portfolio a gap analýza jsou jen **kontext pro
+  dialog**; do banky jde výhradně to, co projde úsudkem uživatele.
+  Důvod: kdyby server vrátil hotový seznam nápadů, uživatel nemá důvod ho znovu
+  otevírat — hodnota je v procesu (kontext → dialog → nápad), ne v datech.
 - **Jen lokální čtení.** Žádný internet, žádné citlivé hodnoty, žádný otevřený port.
 - Data zdroje: `~/projects/projects.md`, `~/projects/status.md`, `~/vault/AI-CONTROLLER-MEMORY.md`.
 - Parser je heuristický (markdown tabulky, detekce klíčových slov stacku) — ne přesná analýza.
