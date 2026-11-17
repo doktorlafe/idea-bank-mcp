@@ -68,11 +68,16 @@ const TECH_KEYWORDS = [
   'Kubernetes', 'K3s', 'Terraform', 'Ansible', 'rclone', 'icloudpy',
   'SQLite', 'PostgreSQL', 'MySQL', 'MariaDB', 'MongoDB', 'Redis',
   'FastAPI', 'Flask', 'Django', 'Fastify', 'Express', 'NestJS', 'Spring Boot',
+  'Zola', 'Hugo', 'Jekyll', 'Eleventy', 'Minecraft', 'OpenTTD', 'Mindustry',
+  'bash', 'shell',
   'Laravel', 'Rails', 'GraphQL', 'gRPC', 'WebSocket', 'Chart.js',
   'Cowrie', 'CrowdSec', 'fail2ban', 'UFW', 'Vaultwarden', 'Bitwarden',
   'OpenAI', 'Anthropic', 'DeepSeek', 'Gemini', 'Groq', 'LLM', 'LangChain',
   'LlamaIndex', 'TeamSpeak', 'Funkwhale', 'Uptime Kuma', 'Portainer', 'Gitea',
 ];
+
+/** Krátké názvy technologií — matchují se jen na hranici slova. */
+const WORD_TECH = ['Go', 'R', 'C#', 'C++', 'F#'];
 
 function extractStack(stackCell: string, description: string): string[] {
   const found = new Set<string>();
@@ -87,6 +92,12 @@ function extractStack(stackCell: string, description: string): string[] {
   const hay = `${stackCell} ${description}`;
   for (const kw of TECH_KEYWORDS) {
     if (hay.toLowerCase().includes(kw.toLowerCase())) found.add(kw);
+  }
+
+  // 3) krátké názvy — jen na hranici slova (aby "Go" nechytilo "ground")
+  for (const short of WORD_TECH) {
+    const escaped = short.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (new RegExp(`(^|[^\\p{L}])${escaped}([^\\p{L}]|$)`, 'u').test(hay)) found.add(short);
   }
 
   return [...found];
