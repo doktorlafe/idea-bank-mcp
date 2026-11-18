@@ -245,7 +245,7 @@ jen varianta **A** (distribuce jako balíček), ne B (hostování služby).
 Praktický důsledek:
 
 - **Teď:** primární repo na Gitee (privátní, pod vlastní kontrolou), bez nutnosti řešit veřejnost.
-- **Publikace na npm: hotovo** (v0.1.0, viz sekce 10). GitHub zrcadlo: `github.com/doktorlafe/idea-bank` (**soukromé**, remote `github`; Gitea zůstává primární). Synchronizace: `git push github main --tags`. Před zveřejněním vyčistit osobní údaje (viz níže).
+- **Publikace na npm: hotovo** (v0.1.0, viz sekce 10). GitHub zrcadlo: `github.com/doktorlafe/idea-bank` (**soukromé**, remote `github`; Gitea zůstává primární). Synchronizace: **push mirror v Gitea** (po každém commitu + každých 8 h, token GitHub fine-grained jen pro toto repo, Contents R/W). Ručně netřeba; záložně `git push github main --tags`. Před zveřejněním vyčistit osobní údaje (viz níže).
 - Před zveřejněním je nutné **vyčistit osobní údaje** z dokumentace (absolutní cesty
   `/home/lafe_trap`, popis infrastruktury) — viz `config.ts`, odkud jsou cesty odvozené.
 
