@@ -1,6 +1,6 @@
 {
   "name": "idea-bank",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server with a secret idea bank — store project ideas and get portfolio gap analysis to beat creative block",
   "type": "module",
   "license": "MIT",
@@ -34,9 +34,12 @@
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "serve": "tsx src/http.ts",
+    "start:http": "node dist/http.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/node": "^2.1.2",
     "@modelcontextprotocol/server": "^2.0.0",
     "zod": "^4.0.0"
   },

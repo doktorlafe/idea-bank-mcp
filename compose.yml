@@ -1,0 +1,20 @@
+services:
+  idea-bank:
+    build: .
+    container_name: idea-bank
+    # Pod UID vlastníka banky: ideas.json zůstává 0600 a kontejner ji přečte.
+    user: "1001:1001"
+    restart: unless-stopped
+    # Jen na localhost — ven pouze přes Caddy (host network) + Cloudflare.
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      # Banka read-only: veřejná služba ji nikdy nemění.
+      - ./ideas.json:/data/ideas.json:ro
+    environment:
+      RATE_LIMIT: "60"
+      RATE_WINDOW_SEC: "600"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m

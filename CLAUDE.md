@@ -16,6 +16,9 @@ portfolia, ze kterého doporučí konkrétní nové projekty.
 - `src/parse.ts` — parser `projects.md` / `status.md` (kategorie + markdown tabulky).
 - `src/ideas.ts` — read-write tajná idea banka (`ideas.json`, 0600).
 - `src/config.ts` — cesty ke zdrojům (home-dir).
+- `src/public.ts` + `src/recommend.ts` — veřejný omezený server a výběr nápadů.
+- `src/http.ts` — HTTP vstup (Streamable HTTP, `/mcp`, `/healthz`, rate limit).
+- `Dockerfile`, `compose.yml` — nasazení veřejné verze (`docker compose up -d --build`).
 
 ## Zásady
 
@@ -25,7 +28,14 @@ portfolia, ze kterého doporučí konkrétní nové projekty.
   dialog**; do banky jde výhradně to, co projde úsudkem uživatele.
   Důvod: kdyby server vrátil hotový seznam nápadů, uživatel nemá důvod ho znovu
   otevírat — hodnota je v procesu (kontext → dialog → nápad), ne v datech.
-- **Jen lokální čtení.** Žádný internet, žádné citlivé hodnoty, žádný otevřený port.
+- **Dva režimy (rozhodnuto 2026-11-18):**
+  - **Lokální stdio** (`src/index.ts`, npm `idea-bank`): plný přístup — portfolio autora + read-write banka.
+  - **Veřejný HTTP** (`src/http.ts` → `src/public.ts`, Docker na `127.0.0.1:8787`, ven přes Caddy):
+    banka je **zamčená** — jen `recommend_idea` (max 2 nápady na dotaz) a `list_idea_categories`
+    (jen kategorie + počty). **Nikdy** ven: `list_ideas`, `add_idea`, `remove_idea`, portfolio
+    nástroje, resources (prozrazovaly by infrastrukturu). Banka připojená read-only.
+  - Rate limit na IP (`Cf-Connecting-Ip`), výchozí 60 požadavků / 10 min. Ochrana jen zpomaluje —
+    vytrvalý uživatel banku postupně vytáhne.
 - Data zdroje: `~/projects/projects.md`, `~/projects/status.md`, `~/vault/AI-CONTROLLER-MEMORY.md`.
 - Parser je heuristický (markdown tabulky, detekce klíčových slov stacku) — ne přesná analýza.
 - Po změně parseru ověř: `npm run typecheck` a ruční test `npx tsx src/index.ts` přes stdio.
