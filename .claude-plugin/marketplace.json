@@ -1,0 +1,11 @@
+{
+  "name": "idea-bank",
+  "owner": { "name": "lafe" },
+  "plugins": [
+    {
+      "name": "idea-bank",
+      "source": "./",
+      "description": "Secret idea bank + portfolio gap analysis to beat creative block (MCP server)"
+    }
+  ]
+}

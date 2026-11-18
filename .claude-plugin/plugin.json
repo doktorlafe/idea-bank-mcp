@@ -1,0 +1,15 @@
+{
+  "name": "idea-bank",
+  "version": "0.1.0",
+  "description": "Secret idea bank + portfolio gap analysis to beat creative block (MCP server)",
+  "author": { "name": "lafe" },
+  "repository": "https://github.com/doktorlafe/idea-bank",
+  "license": "MIT",
+  "keywords": ["mcp", "ideas", "portfolio", "brainstorming"],
+  "mcpServers": {
+    "idea-bank": {
+      "command": "npx",
+      "args": ["-y", "idea-bank"]
+    }
+  }
+}

@@ -36,6 +36,14 @@ npm install -g idea-bank
 
 ## Connect to Claude Code
 
+As a plugin (recommended):
+
+```
+/plugin install idea-bank --marketplace https://github.com/doktorlafe/idea-bank.git
+```
+
+Or manually as an MCP server:
+
 Add the server to your MCP config (`~/.claude.json` for all projects, or `.mcp.json`
 for a single project):
 
