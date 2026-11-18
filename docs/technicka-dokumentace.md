@@ -296,3 +296,65 @@ git push --follow-tags          # commit + tag na Gitea
 - Po publikaci registr pár minut vrací `0.0.0-stage` a `npx` hlásí
   „could not determine executable to run" — počkat, není to chyba balíčku.
 - `prepare` spouští `tsc` při `npm publish`, `dist/` se tedy vždy sestaví čerstvě.
+
+## 11. GitHub zrcadlo — výměna tokenu
+
+Push mirror Gitea → `github.com/doktorlafe/idea-bank` se ověřuje fine-grained tokenem
+GitHubu. **Po vypršení tokenu se zrcadlení tiše zastaví** — Gitea nic nehlásí, jen
+v nastavení mirroru přibude chyba a GitHub přestane dostávat commity.
+
+### Jak poznat, že token vypršel
+
+- Repo v Gitea → **Nastavení → Repository → Mirror Settings** → u push mirroru je chyba
+  (např. `Authentication failed`).
+- Nebo porovnej: `git ls-remote github refs/heads/main` ≠ `git rev-parse HEAD`.
+- GitHub posílá e-mail pár dní před vypršením tokenu.
+
+### 1. Nový token na GitHubu
+
+https://github.com/settings/personal-access-tokens/new
+
+| Pole | Hodnota |
+|---|---|
+| Token name | `gitea-mirror-idea-bank` |
+| Expiration | např. 1 rok |
+| Repository access | *Only select repositories* → `doktorlafe/idea-bank` |
+| Permissions → Contents | *Read and write* (nic dalšího) |
+
+Starý token pak smaž na https://github.com/settings/personal-access-tokens.
+
+### 2a. Vložit do Gitea přes web (nejjednodušší)
+
+Repo v Gitea → **Nastavení → Repository → Mirror Settings** → u push mirroru na GitHub:
+smazat a přidat znovu se stejnou adresou `https://github.com/doktorlafe/idea-bank.git`,
+uživatel `doktorlafe`, heslo = nový token, ✔ *Sync when commits are pushed*, interval `8h`.
+Pak **Synchronizovat nyní**.
+
+### 2b. Nebo přes API (bez vkládání tokenu do chatu/historie)
+
+```bash
+# token do souboru jen pro tebe (nečte se do historie shellu)
+read -rsp "Token: " T && umask 077 && printf %s "$T" > ~/.gh-mirror-token; unset T
+
+P=$(printf 'protocol=https\nhost=git.laferrari.eu\n\n' | git credential fill | sed -n 's/^password=//p')
+API=https://git.laferrari.eu/api/v1/repos/lafe_trap/idea-bank/push_mirrors
+
+# smazat starý mirror (remote_name zjistíš: curl -s -u "lafe_trap:$P" $API)
+curl -s -u "lafe_trap:$P" -X DELETE "$API/<remote_name>"
+
+# vytvořit nový
+python3 -c 'import json,sys;print(json.dumps({"remote_address":"https://github.com/doktorlafe/idea-bank.git","remote_username":"doktorlafe","remote_password":sys.argv[1],"interval":"8h0m0s","sync_on_commit":True}))' "$(cat ~/.gh-mirror-token)" \
+  | curl -s -u "lafe_trap:$P" -H 'Content-Type: application/json' -d @- "$API"
+
+curl -s -u "lafe_trap:$P" -X POST "${API}-sync"   # okamžitá synchronizace
+shred -u ~/.gh-mirror-token                       # smazat token ze disku
+```
+
+### 3. Ověření
+
+```bash
+git ls-remote github refs/heads/main   # musí se shodovat s:
+git rev-parse HEAD
+```
+
+A v Mirror Settings nesmí být u mirroru chyba.
