@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="idea-bank — beat creative block with your AI agent">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14112b"/>
+      <stop offset="1" stop-color="#2b1a4a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd166" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffd166" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bulb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset="1" stop-color="#ffb703"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
+
+  <!-- jemné „hvězdy" = nápady v bance -->
+  <g fill="#ffffff" opacity="0.35">
+    <circle cx="80" cy="60" r="2"/><circle cx="210" cy="300" r="1.5"/><circle cx="420" cy="40" r="1.5"/>
+    <circle cx="560" cy="320" r="2"/><circle cx="700" cy="70" r="1.5"/><circle cx="1120" cy="300" r="2"/>
+    <circle cx="1060" cy="50" r="1.5"/><circle cx="640" cy="200" r="1"/><circle cx="1150" cy="160" r="1.5"/>
+  </g>
+
+  <!-- žárovka -->
+  <g transform="translate(250 180)">
+    <circle r="150" fill="url(#glow)"/>
+    <path d="M0 -92 C 52 -92 84 -54 84 -10 C 84 24 64 44 50 62 C 42 72 40 82 40 92 L -40 92 C -40 82 -42 72 -50 62 C -64 44 -84 24 -84 -10 C -84 -54 -52 -92 0 -92 Z" fill="url(#bulb)"/>
+    <path d="M-24 92 L-24 40 L0 12 L24 40 L24 92" fill="none" stroke="#b5651d" stroke-width="5" stroke-linejoin="round"/>
+    <rect x="-40" y="98" width="80" height="14" rx="5" fill="#8d99ae"/>
+    <rect x="-36" y="116" width="72" height="14" rx="5" fill="#6c7a91"/>
+    <rect x="-22" y="134" width="44" height="10" rx="5" fill="#4a5568"/>
+  </g>
+
+  <text x="470" y="160" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="78" font-weight="800" fill="#ffffff">idea-bank</text>
+  <text x="474" y="214" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#ffd166">Stuck? Your AI agent finds your next project.</text>
+  <text x="474" y="262" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#c9c3e6">MCP server · curated idea bank · works with Claude</text>
+</svg>
