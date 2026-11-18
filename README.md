@@ -34,6 +34,19 @@ Or install globally:
 npm install -g idea-bank
 ```
 
+## Hosted public version (no install)
+
+A public, read-only instance runs at **`https://mcp.laferrari.eu/mcp`** (Streamable HTTP).
+In claude.ai: *Settings → Connectors → Add custom connector* → paste the URL.
+
+The public instance exposes only two tools, and the curated bank stays locked:
+
+- `recommend_idea` — returns at most 2 ideas matched to what you know and want (`zajmy`, `maxObtiznost`, `kategorie`)
+- `list_idea_categories` — category names and counts only
+
+No portfolio tools, no `list_ideas` / `add_idea` / `remove_idea`, no resources. Rate limited per IP (60 requests / 10 min).
+Self-host it yourself with `docker compose up -d --build` (see `Dockerfile`, `compose.yml`).
+
 ## Connect to Claude Code
 
 As a plugin (recommended):
