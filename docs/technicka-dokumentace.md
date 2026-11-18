@@ -245,7 +245,7 @@ jen varianta **A** (distribuce jako balíček), ne B (hostování služby).
 Praktický důsledek:
 
 - **Teď:** primární repo na Gitee (privátní, pod vlastní kontrolou), bez nutnosti řešit veřejnost.
-- **Až k publikaci:** GitHub jako veřejné zrcadlo + publikace na npm (`npx idea-bank`).
+- **Publikace na npm: hotovo** (v0.1.0, viz sekce 10). GitHub jako veřejné zrcadlo — volitelně, zatím ne.
 - Před zveřejněním je nutné **vyčistit osobní údaje** z dokumentace (absolutní cesty
   `/home/lafe_trap`, popis infrastruktury) — viz `config.ts`, odkud jsou cesty odvozené.
 
@@ -263,3 +263,36 @@ v `homedir()` — každá se dá přepsat proměnnou prostředí (viz `config.ts
 
 Chybějící soubor neshodí server — `parse.ts` vrací prázdný katalog/status
 (`readSafe`). To je nutné pro variantu A, kde uživatel nemá tvůj vault ani tvůj `projects.md`.
+
+## 10. Vydání na npm (stav a postup)
+
+**Stav:** vydáno `idea-bank@0.1.0` na [npmjs.com/package/idea-bank](https://www.npmjs.com/package/idea-bank)
+(18. 11. 2026, účet `laferrari`), git tag `v0.1.0`. Ověřeno: `npx -y idea-bank@0.1.0`
+z registru odpoví na `tools/list`. Nic se nehostuje — varianta A ze sekce 9.
+
+Instalace pro uživatele:
+
+```bash
+claude mcp add idea-bank -- npx -y idea-bank
+```
+
+Obsah balíčku (`files` v `package.json`): jen `dist/`, `README.md`, `LICENSE`.
+`ideas.json` se do balíčku **nedostane** — ověř před každým vydáním přes `npm pack --dry-run`.
+
+### Postup dalšího vydání
+
+```bash
+npm run typecheck
+npm pack --dry-run              # zkontroluj obsah, žádný ideas.json
+npm version patch               # nebo minor/major — zvedne verzi + git tag
+npm publish --auth-type=web     # v NORMÁLNÍM terminálu (ne přes `!` v Claude Code)
+git push --follow-tags          # commit + tag na Gitea
+```
+
+### Úskalí
+
+- **2FA přes security key:** npm nedá OTP kód; `--auth-type=web` otevře potvrzení v prohlížeči.
+  Přes `!` v Claude Code (neinteraktivní) to padá na `EOTP` — spouštět v normálním terminálu.
+- Po publikaci registr pár minut vrací `0.0.0-stage` a `npx` hlásí
+  „could not determine executable to run" — počkat, není to chyba balíčku.
+- `prepare` spouští `tsc` při `npm publish`, `dist/` se tedy vždy sestaví čerstvě.
