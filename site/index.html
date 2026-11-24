@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>idea-bank — your next project, picked by your AI agent</title>
+<meta name="description" content="idea-bank is an MCP server for Claude. Stuck? Your AI agent talks with you and recommends one project idea that fits.">
+<meta property="og:title" content="idea-bank — MCP server for Claude">
+<meta property="og:description" content="Out of ideas? Ask your AI agent and get one idea that actually fits you.">
+<meta property="og:url" content="https://ideas.laferrari.eu/">
+<style>
+:root{--bg:#0f1115;--card:#171a21;--line:#262b36;--fg:#e8eaf0;--mut:#9aa3b2;--acc:#ffb703;--acc2:#7c3aed}
+@media (prefers-color-scheme: light){:root{--bg:#fafaf7;--card:#fff;--line:#e4e4df;--fg:#16181d;--mut:#5b6270;--acc:#c27c00;--acc2:#6d28d9}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:880px;margin:0 auto;padding:0 16px}
+a{color:var(--acc)}
+header{padding:72px 0 40px}
+.tag{display:inline-block;font-size:13px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:3px 12px}
+h1{font-size:clamp(32px,6vw,52px);line-height:1.1;margin:18px 0 14px;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--acc)}
+.lead{font-size:19px;color:var(--mut);max-width:620px;margin:0}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn.primary{background:var(--acc);color:#111;border-color:var(--acc)}
+.btn.heart{border-color:#db61a2;color:#db61a2}
+section{padding:36px 0;border-top:1px solid var(--line)}
+h2{font-size:24px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--mut);font-size:15px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font-size:14px;margin:8px 0 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.step{margin-bottom:22px}
+.step b{color:var(--acc)}
+.cats{display:flex;flex-wrap:wrap;gap:8px}
+.cats span{border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:14px;color:var(--mut)}
+.support{background:linear-gradient(135deg,color-mix(in srgb,var(--acc2) 18%,var(--card)),var(--card));border:1px solid var(--line);border-radius:16px;padding:28px}
+.support p{color:var(--mut);margin:0 0 18px}
+footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <span class="tag">MCP server · works with Claude · MIT</span>
+  <h1>Out of ideas?<br>Get <em>one</em> project that fits you.</h1>
+  <p class="lead">Skip the lists of “100 project ideas”. idea-bank plugs into your AI agent. The agent asks what you know and how much time you have, then picks 1–2 ideas from a curated bank.</p>
+  <div class="cta">
+    <a class="btn primary" href="#start">Get started in 30 s</a>
+    <a class="btn heart" href="https://github.com/sponsors/doktorlafe">♥ Sponsor</a>
+    <a class="btn" href="https://github.com/doktorlafe/idea-bank">GitHub</a>
+  </div>
+</header>
+
+<section>
+  <h2>Why idea-bank</h2>
+  <div class="grid">
+    <div class="card"><h3>🎯 Fits you</h3><p>You get 1–2 ideas that match your skills and time, not a wall of text.</p></div>
+    <div class="card"><h3>🔒 Curated bank</h3><p>Hand-picked project briefs with difficulty and what you'll learn. Never dumped all at once.</p></div>
+    <div class="card"><h3>💬 Conversation first</h3><p>The agent talks with you before it suggests anything. The best idea comes out of that conversation.</p></div>
+    <div class="card"><h3>🧭 Blind spots</h3><p>Run it locally and it scans your own projects for domains and tech you've never touched.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Idea categories</h2>
+  <div class="cats">
+    <span>databases</span><span>data visualization</span><span>monitoring</span><span>linux</span><span>shell / bash</span><span>scripting</span><span>networking</span><span>web</span><span>Windows / PowerShell</span><span>C++ / C#</span><span>AI / ML</span>
+  </div>
+</section>
+
+<section id="start">
+  <h2>Get started</h2>
+  <div class="step"><b>① claude.ai, no install:</b> Settings → Connectors → Add custom connector, then paste:
+    <pre><code>https://mcp.laferrari.eu/mcp</code></pre></div>
+  <div class="step"><b>② Claude Code</b>
+    <pre><code>claude mcp add idea-bank -- npx -y idea-bank</code></pre></div>
+  <div class="step"><b>③ Claude Desktop / any MCP client</b>
+    <pre><code>{ "mcpServers": { "idea-bank": { "command": "npx", "args": ["-y", "idea-bank"] } } }</code></pre></div>
+  <p style="color:var(--mut);font-size:15px">The hosted endpoint only <em>recommends</em> ideas and is rate-limited. The local version also analyses your own portfolio and lets you keep a private idea bank.</p>
+</section>
+
+<section>
+  <div class="support">
+    <h2>Keep the bank growing ♥</h2>
+    <p>idea-bank is free and open source. The hosted server runs on my own hardware. Sponsoring pays for hosting and new curated ideas, and it keeps the free endpoint online.</p>
+    <a class="btn primary" href="https://github.com/sponsors/doktorlafe">Become a sponsor on GitHub</a>
+  </div>
+</section>
+
+<footer>
+  idea-bank · MIT · <a href="https://github.com/doktorlafe/idea-bank">source</a> · <a href="https://www.npmjs.com/package/idea-bank">npm</a> · <a href="https://laferrari.eu">laferrari.eu</a>
+</footer>
+</main>
+</body>
+</html>

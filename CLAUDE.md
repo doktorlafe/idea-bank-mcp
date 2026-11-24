@@ -19,6 +19,7 @@ portfolia, ze kterého doporučí konkrétní nové projekty.
 - `src/public.ts` + `src/recommend.ts` — veřejný omezený server a výběr nápadů.
 - `src/http.ts` — HTTP vstup (Streamable HTTP, `/mcp`, `/healthz`, rate limit).
 - `Dockerfile`, `compose.yml` — nasazení veřejné verze (`docker compose up -d --build`).
+- `site/index.html` — landing page `ideas.laferrari.eu` (dary přes GitHub Sponsors); nasazení `bash scripts/deploy-site.sh`, Caddy blok v `basic-web/Caddyfile`.
 
 ## Zásady
 
